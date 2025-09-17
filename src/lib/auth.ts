@@ -8,6 +8,10 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
   session: {
     strategy: 'jwt',
+    maxAge: 60 * 60, // 1 hour (shorter for faster role updates)
+  },
+  jwt: {
+    maxAge: 60 * 60, // 1 hour
   },
   providers: [
     CredentialsProvider({
@@ -51,15 +55,41 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // If this is the first time (user is provided), store the role and timestamp
       if (user) {
         token.role = (user as any).role
+        token.lastRefresh = Date.now()
       }
+
+      // Refresh user data from database every 5 minutes to get updated role
+      const shouldRefresh = !token.lastRefresh || (Date.now() - token.lastRefresh > 5 * 60 * 1000)
+
+      if (token.sub && shouldRefresh) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.sub },
+            select: { role: true, name: true, email: true }
+          })
+
+          if (dbUser) {
+            token.role = dbUser.role
+            token.name = dbUser.name
+            token.email = dbUser.email
+            token.lastRefresh = Date.now()
+          }
+        } catch (error) {
+          console.error('Error refreshing user data:', error)
+        }
+      }
+
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (session.user && token) {
         session.user.id = token.sub as string
         session.user.role = token.role as string
+        session.user.name = token.name as string
+        session.user.email = token.email as string
       }
       return session
     },
