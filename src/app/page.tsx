@@ -1,10 +1,10 @@
-import { Button } from '@/components/ui/button'
-
 export default function Home() {
   return (
-    <div>
-      <h1>Hello World!</h1>
-      <Button className="ml-2">Test</Button>
+    <div className="container mx-auto p-8">
+      <h1 className="text-4xl font-bold mb-4">MCAdmin Dashboard</h1>
+      <p className="text-muted-foreground">
+        Welcome to your Minecraft server administration panel.
+      </p>
     </div>
   )
 }
