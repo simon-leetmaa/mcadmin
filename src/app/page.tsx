@@ -21,59 +21,29 @@ export default function Home() {
               <h2 className="text-lg font-semibold text-green-800 mb-2">
                 Welcome back, {session.user.name || session.user.email}!
               </h2>
-              <p className="text-green-700 mb-4">
-                You're signed in as <span className="font-medium">{session.user.role}</span>
+              <p className="text-green-700">
+                You&apos;re signed in as <span className="font-medium">{session.user.role}</span>
               </p>
-              <div className="flex gap-4">
-                <Button asChild>
-                  <Link href="/suggestions">View Mod Suggestions</Link>
-                </Button>
-                <Button variant="outline" asChild>
-                  <Link href="/suggestions/new">Create Suggestion</Link>
-                </Button>
-              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-card border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">Mod Suggestions</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Browse and vote on community mod suggestions
-                </p>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/suggestions">Browse →</Link>
-                </Button>
-              </div>
-
-              <div className="bg-card border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">Server Status</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Monitor and control your Minecraft server
-                </p>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/server">View Server →</Link>
-                </Button>
-              </div>
-
-              <div className="bg-card border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">Profile</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Manage your account and preferences
-                </p>
-                <Button variant="outline" size="sm" disabled>
-                  Coming Soon
-                </Button>
-              </div>
+            <div className="bg-card border rounded-lg p-6">
+              <h3 className="font-semibold mb-2">Authentication System</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                ✅ User authentication is working! You can sign in, sign up, and manage user sessions with role-based access.
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Ready for additional features to be built on top of this foundation.
+              </p>
             </div>
           </div>
         ) : (
           <div className="space-y-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
               <h2 className="text-xl font-semibold text-blue-800 mb-4">
-                Get Started with MCAdmin
+                MCAdmin Authentication Demo
               </h2>
               <p className="text-blue-700 mb-6">
-                Sign in to access mod suggestions, vote on community proposals, and manage your Minecraft server.
+                This is a working authentication system for a Minecraft server admin panel. Create an account or sign in to test the system.
               </p>
               <div className="flex gap-4">
                 <Button asChild>
@@ -85,34 +55,15 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-card border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">🗳️ Mod Voting System</h3>
-                <p className="text-sm text-muted-foreground">
-                  Community-driven mod suggestions with upvote/downvote system and automatic approval thresholds
-                </p>
-              </div>
-
-              <div className="bg-card border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">🎮 Server Management</h3>
-                <p className="text-sm text-muted-foreground">
-                  Control your Minecraft server with start/stop/restart functionality and real-time status monitoring
-                </p>
-              </div>
-
-              <div className="bg-card border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">👥 Role-Based Access</h3>
-                <p className="text-sm text-muted-foreground">
-                  Different permission levels for users, moderators, and administrators with protected routes
-                </p>
-              </div>
-
-              <div className="bg-card border rounded-lg p-6">
-                <h3 className="font-semibold mb-2">📁 File Management</h3>
-                <p className="text-sm text-muted-foreground">
-                  Upload and manage mod files through integrated Express.js API with secure file handling
-                </p>
-              </div>
+            <div className="bg-card border rounded-lg p-6">
+              <h3 className="font-semibold mb-2">✅ What&apos;s Working</h3>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• User registration and authentication</li>
+                <li>• Role-based access (USER, MODERATOR, ADMIN)</li>
+                <li>• Protected routes and middleware</li>
+                <li>• Secure password hashing</li>
+                <li>• Database integration with Prisma</li>
+              </ul>
             </div>
           </div>
         )}

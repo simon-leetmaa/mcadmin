@@ -1,12 +1,5 @@
 'use client'
 
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
@@ -18,39 +11,10 @@ export function Header() {
     <header className="border-b bg-background">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center">
             <Link href="/" className="text-2xl font-bold">
               MCAdmin
             </Link>
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/" className={navigationMenuTriggerStyle()}>
-                      Dashboard
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                {session && (
-                  <>
-                    <NavigationMenuItem>
-                      <NavigationMenuLink asChild>
-                        <Link href="/suggestions" className={navigationMenuTriggerStyle()}>
-                          Suggestions
-                        </Link>
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem>
-                      <NavigationMenuLink asChild>
-                        <Link href="/server" className={navigationMenuTriggerStyle()}>
-                          Server
-                        </Link>
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                  </>
-                )}
-              </NavigationMenuList>
-            </NavigationMenu>
           </div>
 
           <div className="flex items-center space-x-3">
