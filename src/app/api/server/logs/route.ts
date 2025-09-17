@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     if (typeof data.logs === 'string') {
       const logLines = data.logs
         .split('\n')
-        .filter(line => line.trim() !== '')
+        .filter((line: string) => line.trim() !== '')
         .map((line: string) => {
           // Remove ANSI escape codes
           const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '').replace(/\r/g, '')

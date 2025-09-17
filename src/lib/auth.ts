@@ -5,7 +5,7 @@ import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as any,
   session: {
     strategy: 'jwt',
     maxAge: 60 * 60, // 1 hour (shorter for faster role updates)
@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       // Refresh user data from database every 5 minutes to get updated role
-      const shouldRefresh = !token.lastRefresh || (Date.now() - token.lastRefresh > 5 * 60 * 1000)
+      const shouldRefresh = !token.lastRefresh || (Date.now() - (token.lastRefresh as number) > 5 * 60 * 1000)
 
       if (token.sub && shouldRefresh) {
         try {
@@ -96,6 +96,5 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/signin',
-    signUp: '/auth/signup',
   },
 }
