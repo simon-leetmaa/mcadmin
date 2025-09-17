@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -39,7 +39,7 @@ export default function ServerPage() {
   const isAdmin = session?.user?.role === 'ADMIN'
   const canView = session?.user?.role === 'ADMIN' || session?.user?.role === 'MODERATOR'
 
-  const fetchStatus = async () => {
+  const fetchStatus = useCallback(async () => {
     if (!canView) return
 
     try {
@@ -53,14 +53,14 @@ export default function ServerPage() {
       } else {
         setError('Failed to fetch server status')
       }
-    } catch (err) {
+    } catch {
       setError('Connection error - Check if MC server API is running')
     } finally {
       setLoading(false)
     }
-  }
+  }, [canView])
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     if (!canView) return
 
     try {
@@ -77,11 +77,11 @@ export default function ServerPage() {
           setLogs([])
         }
       }
-    } catch (err) {
-      console.error('Failed to fetch logs:', err)
+    } catch {
+      console.error('Failed to fetch logs')
       setLogs([])
     }
-  }
+  }, [canView])
 
   const handleServerAction = async (action: 'start' | 'stop' | 'restart') => {
     if (!isAdmin) return
@@ -102,7 +102,7 @@ export default function ServerPage() {
       } else {
         setError(`Failed to ${action} server`)
       }
-    } catch (err) {
+    } catch {
       setError(`Error executing ${action}`)
     } finally {
       setActionLoading(null)
@@ -120,7 +120,7 @@ export default function ServerPage() {
     }, 30000)
 
     return () => clearInterval(interval)
-  }, [canView])
+  }, [fetchStatus, fetchLogs])
 
   if (!session) {
     return (

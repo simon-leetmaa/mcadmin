@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
           const logMatch = cleanLine.match(/\[(\d{2}:\d{2}:\d{2})\]\s*\[([^\]]+)\/([^\]]+)\]\s*(?:\[([^\]]+)\]:)?\s*(.*)/)
 
           if (logMatch) {
-            const [, time, thread, level, mod, message] = logMatch
+            const [, time, , level, mod, message] = logMatch
             return {
               timestamp: time,
               level: level.toUpperCase(),

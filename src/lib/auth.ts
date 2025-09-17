@@ -5,7 +5,7 @@ import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: 'jwt',
     maxAge: 60 * 60, // 1 hour (shorter for faster role updates)
@@ -57,7 +57,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       // If this is the first time (user is provided), store the role and timestamp
       if (user) {
-        token.role = (user as any).role
+        token.role = user.role
         token.lastRefresh = Date.now()
       }
 
