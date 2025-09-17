@@ -7,22 +7,16 @@ const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   name: z.string().min(1).optional(),
-  username: z.string().min(3).optional(),
 })
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { email, password, name, username } = registerSchema.parse(body)
+    const { email, password, name } = registerSchema.parse(body)
 
     // Check if user already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email },
-          ...(username ? [{ username }] : []),
-        ],
-      },
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     })
 
     if (existingUser) {
@@ -41,13 +35,11 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         name,
-        username,
       },
       select: {
         id: true,
         email: true,
         name: true,
-        username: true,
         role: true,
       },
     })

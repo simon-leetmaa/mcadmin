@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { requireAuth, requireMCAPI, apiError } from '@/lib/api-auth'
 import { z } from 'zod'
 
 const controlSchema = z.object({
@@ -9,44 +8,29 @@ const controlSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 403 }
-      )
-    }
+    await requireAuth(['ADMIN'])
 
     const body = await req.json()
     const { action } = controlSchema.parse(body)
 
-    const response = await fetch(`${process.env.MINECRAFT_API_URL}/api/server/${action}`, {
+    const response = await requireMCAPI(`/api/server/${action}`, {
       method: 'POST',
-      headers: {
-        'x-api-key': process.env.MINECRAFT_API_KEY!,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     })
-
-    if (!response.ok) {
-      throw new Error(`MC API responded with ${response.status}`)
-    }
 
     const data = await response.json()
     return NextResponse.json(data)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid action', errors: error.issues },
-        { status: 400 }
-      )
+      return apiError('Invalid action', 400)
     }
 
     console.error('Server control error:', error)
-    return NextResponse.json(
-      { error: 'Failed to control server' },
-      { status: 500 }
-    )
+    if (error instanceof Error) {
+      if (error.message.includes('Unauthorized') || error.message.includes('Forbidden')) {
+        return apiError(error.message, 403)
+      }
+    }
+    return apiError('Failed to control server', 500)
   }
 }

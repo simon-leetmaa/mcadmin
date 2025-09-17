@@ -1,33 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { requireAuth, requireMCAPI, apiError } from '@/lib/api-auth'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-
-    if (!session || !['ADMIN', 'MODERATOR'].includes(session.user.role)) {
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin or Moderator access required' },
-        { status: 403 }
-      )
-    }
+    await requireAuth(['ADMIN', 'MODERATOR'])
 
     const { searchParams } = new URL(req.url)
     const lines = searchParams.get('lines') || '50'
 
-    const response = await fetch(
-      `${process.env.MINECRAFT_API_URL}/api/server/logs?lines=${lines}`,
-      {
-        headers: {
-          'x-api-key': process.env.MINECRAFT_API_KEY!,
-        },
-      }
-    )
-
-    if (!response.ok) {
-      throw new Error(`MC API responded with ${response.status}`)
-    }
+    const response = await requireMCAPI(`/api/server/logs?lines=${lines}`)
 
     const data = await response.json()
 
@@ -66,9 +47,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(data)
   } catch (error) {
     console.error('Server logs error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch server logs' },
-      { status: 500 }
-    )
+    if (error instanceof Error) {
+      if (error.message.includes('Unauthorized') || error.message.includes('Forbidden')) {
+        return apiError(error.message, 403)
+      }
+    }
+    return apiError('Failed to fetch server logs', 500)
   }
 }

@@ -14,19 +14,15 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  username      String?   @unique
-  name          String?
-  image         String?
-  role          Role      @default(USER)
-  password      String?
-  emailVerified DateTime?
+  id       String @id @default(cuid())
+  email    String @unique
+  name     String?
+  image    String?
+  role     Role   @default(USER)
+  password String?
 
-  suggestions ModSuggestion[]
-  votes       Vote[]
-  accounts    Account[]
-  sessions    Session[]
+  accounts Account[]
+  sessions Session[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -74,56 +70,9 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-model ModSuggestion {
-  id          String @id @default(cuid())
-  title       String
-  description String
-  modUrl      String?
-  imageUrl    String?
-
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId String
-
-  status    Status @default(PENDING)
-  votes     Vote[]
-  voteCount Int    @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("mod_suggestions")
-}
-
-model Vote {
-  id String @id @default(cuid())
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  suggestion   ModSuggestion @relation(fields: [suggestionId], references: [id], onDelete: Cascade)
-  suggestionId String
-
-  type VoteType
-
-  createdAt DateTime @default(now())
-
-  @@unique([userId, suggestionId])
-  @@map("votes")
-}
 
 enum Role {
   USER
   MODERATOR
   ADMIN
-}
-
-enum Status {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum VoteType {
-  UPVOTE
-  DOWNVOTE
 }

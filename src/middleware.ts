@@ -2,7 +2,8 @@ import { withAuth } from 'next-auth/middleware'
 
 export default withAuth(
   function middleware() {
-    // Additional middleware logic can go here
+    // Middleware handles basic auth requirements
+    // Specific role checks are handled in individual pages
   },
   {
     callbacks: {
@@ -14,16 +15,7 @@ export default withAuth(
           return true
         }
 
-        // Require authentication for protected routes
-        if (pathname.startsWith('/admin/')) {
-          return token?.role === 'ADMIN'
-        }
-
-        if (pathname.startsWith('/moderator/')) {
-          return token?.role === 'ADMIN' || token?.role === 'MODERATOR'
-        }
-
-        // Allow access to other pages for authenticated users
+        // Require authentication for all protected pages
         return !!token
       },
     },
@@ -32,10 +24,7 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    '/admin/:path*',
-    '/moderator/:path*',
-    '/dashboard/:path*',
-    '/suggestions/new',
-    '/suggestions/:id/edit',
+    '/mods',
+    '/server',
   ],
 }

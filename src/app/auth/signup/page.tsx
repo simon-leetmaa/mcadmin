@@ -11,7 +11,6 @@ export default function SignUpPage() {
     password: '',
     confirmPassword: '',
     name: '',
-    username: '',
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -38,7 +37,6 @@ export default function SignUpPage() {
           email: formData.email,
           password: formData.password,
           name: formData.name || undefined,
-          username: formData.username || undefined,
         }),
       })
 
@@ -122,21 +120,7 @@ export default function SignUpPage() {
               />
             </div>
 
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Username
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                value={formData.username}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div>
+<div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password *
               </label>

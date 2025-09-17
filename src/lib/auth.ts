@@ -1,15 +1,11 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
+import { prisma } from './prisma'
 
 export const authOptions: NextAuthOptions = {
-  // No adapter needed when using JWT strategy with credentials provider
-  // This prevents unnecessary database queries that cause delays
   session: {
     strategy: 'jwt',
-    maxAge: 60 * 60, // 1 hour (shorter for faster role updates)
-  },
-  jwt: {
     maxAge: 60 * 60, // 1 hour
   },
   providers: [
@@ -24,14 +20,8 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // Lazy load Prisma only when actually authenticating
-        // This prevents cold starts on every session check
-        const { prisma } = await import('./prisma')
-
         const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
+          where: { email: credentials.email },
         })
 
         if (!user || !user.password) {
@@ -58,16 +48,9 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // If this is the first time (user is provided), store the role and timestamp
       if (user) {
         token.role = user.role
-        token.lastRefresh = Date.now()
       }
-
-      // Skip database refresh to avoid delays with remote databases
-      // The role is set correctly when the user logs in
-      // If role changes are needed, user should log out and log in again
-
       return token
     },
     async session({ session, token }) {
