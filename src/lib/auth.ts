@@ -1,12 +1,10 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaAdapter } from '@auth/prisma-adapter'
-import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  adapter: PrismaAdapter(prisma) as any,
+  // No adapter needed when using JWT strategy with credentials provider
+  // This prevents unnecessary database queries that cause delays
   session: {
     strategy: 'jwt',
     maxAge: 60 * 60, // 1 hour (shorter for faster role updates)
@@ -25,6 +23,10 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           return null
         }
+
+        // Lazy load Prisma only when actually authenticating
+        // This prevents cold starts on every session check
+        const { prisma } = await import('./prisma')
 
         const user = await prisma.user.findUnique({
           where: {
@@ -62,26 +64,9 @@ export const authOptions: NextAuthOptions = {
         token.lastRefresh = Date.now()
       }
 
-      // Refresh user data from database every 5 minutes to get updated role
-      const shouldRefresh = !token.lastRefresh || (Date.now() - (token.lastRefresh as number) > 5 * 60 * 1000)
-
-      if (token.sub && shouldRefresh) {
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.sub },
-            select: { role: true, name: true, email: true }
-          })
-
-          if (dbUser) {
-            token.role = dbUser.role
-            token.name = dbUser.name
-            token.email = dbUser.email
-            token.lastRefresh = Date.now()
-          }
-        } catch (error) {
-          console.error('Error refreshing user data:', error)
-        }
-      }
+      // Skip database refresh to avoid delays with remote databases
+      // The role is set correctly when the user logs in
+      // If role changes are needed, user should log out and log in again
 
       return token
     },
