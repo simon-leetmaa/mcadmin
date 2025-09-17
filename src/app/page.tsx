@@ -26,24 +26,38 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-card border rounded-lg p-6">
-              <h3 className="font-semibold mb-2">Authentication System</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                ✅ User authentication is working! You can sign in, sign up, and manage user sessions with role-based access.
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Ready for additional features to be built on top of this foundation.
-              </p>
+            <div className="grid gap-6 md:grid-cols-2">
+              {(session.user.role === 'ADMIN' || session.user.role === 'MODERATOR') && (
+                <div className="bg-card border rounded-lg p-6">
+                  <h3 className="font-semibold mb-2">Server Management</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Monitor and control your Minecraft server
+                  </p>
+                  <Button asChild>
+                    <Link href="/server">Access Server Controls</Link>
+                  </Button>
+                </div>
+              )}
+
+              <div className="bg-card border rounded-lg p-6">
+                <h3 className="font-semibold mb-2">Account Settings</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Manage your profile and preferences
+                </p>
+                <Button variant="outline" disabled>
+                  Coming Soon
+                </Button>
+              </div>
             </div>
           </div>
         ) : (
           <div className="space-y-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
               <h2 className="text-xl font-semibold text-blue-800 mb-4">
-                MCAdmin Authentication Demo
+                Welcome to MCAdmin
               </h2>
               <p className="text-blue-700 mb-6">
-                This is a working authentication system for a Minecraft server admin panel. Create an account or sign in to test the system.
+                Sign in to access your Minecraft server administration panel.
               </p>
               <div className="flex gap-4">
                 <Button asChild>
@@ -53,17 +67,6 @@ export default function Home() {
                   <Link href="/auth/signup">Create Account</Link>
                 </Button>
               </div>
-            </div>
-
-            <div className="bg-card border rounded-lg p-6">
-              <h3 className="font-semibold mb-2">✅ What&apos;s Working</h3>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• User registration and authentication</li>
-                <li>• Role-based access (USER, MODERATOR, ADMIN)</li>
-                <li>• Protected routes and middleware</li>
-                <li>• Secure password hashing</li>
-                <li>• Database integration with Prisma</li>
-              </ul>
             </div>
           </div>
         )}

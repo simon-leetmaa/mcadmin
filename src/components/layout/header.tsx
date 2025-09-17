@@ -11,10 +11,34 @@ export function Header() {
     <header className="border-b bg-background">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center space-x-6">
             <Link href="/" className="text-2xl font-bold">
               MCAdmin
             </Link>
+            {session && (
+              <nav className="flex items-center space-x-4">
+                <Link
+                  href="/"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/mods"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
+                  Mods
+                </Link>
+                {(session.user.role === 'ADMIN' || session.user.role === 'MODERATOR') && (
+                  <Link
+                    href="/server"
+                    className="text-sm font-medium hover:text-primary transition-colors"
+                  >
+                    Server
+                  </Link>
+                )}
+              </nav>
+            )}
           </div>
 
           <div className="flex items-center space-x-3">

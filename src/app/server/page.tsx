@@ -39,6 +39,29 @@ export default function ServerPage() {
   const isAdmin = session?.user?.role === 'ADMIN'
   const canView = session?.user?.role === 'ADMIN' || session?.user?.role === 'MODERATOR'
 
+  // Helper function to format uptime from start timestamp to readable duration
+  const formatUptime = (startTime: string): string => {
+    try {
+      const start = new Date(startTime)
+      const now = new Date()
+      const diffMs = now.getTime() - start.getTime()
+
+      const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+      const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+
+      if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m`
+      } else if (hours > 0) {
+        return `${hours}h ${minutes}m`
+      } else {
+        return `${minutes}m`
+      }
+    } catch {
+      return startTime // Fallback to original if parsing fails
+    }
+  }
+
   const fetchStatus = useCallback(async () => {
     if (!canView) return
 
@@ -220,7 +243,7 @@ export default function ServerPage() {
                 {status.uptime && (
                   <div className="flex items-center justify-between">
                     <span className="font-medium">Uptime:</span>
-                    <span>{status.uptime}</span>
+                    <span>{formatUptime(status.uptime)}</span>
                   </div>
                 )}
 
